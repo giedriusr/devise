@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Controllers
     # Create url helpers to be used with resource/scope configuration. Acts as

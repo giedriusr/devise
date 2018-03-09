@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class UsersController < ApplicationController
   prepend_before_action :current_user, only: :exhibit
   before_action :authenticate_user!, except: [:accept, :exhibit]
@@ -15,7 +13,7 @@ class UsersController < ApplicationController
   end
 
   def update_form
-    render (Devise::Test.rails5? ? :body : :text) => 'Update'
+    render (Devise.rails5? ? :body : :text) => 'Update'
   end
 
   def accept
@@ -23,11 +21,11 @@ class UsersController < ApplicationController
   end
 
   def exhibit
-    render (Devise::Test.rails5? ? :body : :text) => current_user ? "User is authenticated" : "User is not authenticated"
+    render (Devise.rails5? ? :body : :text) => current_user ? "User is authenticated" : "User is not authenticated"
   end
 
   def expire
     user_session['last_request_at'] = 31.minutes.ago.utc
-    render (Devise::Test.rails5? ? :body : :text) => 'User will be expired on next request'
+    render (Devise.rails5? ? :body : :text) => 'User will be expired on next request'
   end
 end

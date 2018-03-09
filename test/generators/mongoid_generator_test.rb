@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "test_helper"
 
 if DEVISE_ORM == :mongoid

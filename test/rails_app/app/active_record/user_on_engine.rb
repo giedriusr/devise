@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'shared_user_without_omniauth'
 
 class UserOnEngine < ActiveRecord::Base

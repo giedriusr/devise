@@ -1,22 +1,9 @@
-# frozen_string_literal: true
-
 require 'test_helper'
 
 class ConfirmableTest < ActiveSupport::TestCase
 
   def setup
     setup_mailer
-  end
-
-  test 'should set callbacks to send the mail' do
-    if DEVISE_ORM == :active_record
-      defined_callbacks = User._commit_callbacks.map(&:filter)
-      assert_includes defined_callbacks, :send_on_create_confirmation_instructions
-      assert_includes defined_callbacks, :send_reconfirmation_instructions
-    elsif DEVISE_ORM == :mongoid
-      assert_includes User._create_callbacks.map(&:filter), :send_on_create_confirmation_instructions
-      assert_includes User._update_callbacks.map(&:filter), :send_reconfirmation_instructions
-    end
   end
 
   test 'should generate confirmation token after creating a record' do
@@ -520,30 +507,5 @@ class ReconfirmableTest < ActiveSupport::TestCase
 
     admin = Admin::WithSaveInCallback.create(valid_attributes.except(:username))
     assert !admin.pending_reconfirmation?
-  end
-
-  test 'should require reconfirmation after creating a record and updating the email' do
-    admin = create_admin
-    assert !admin.instance_variable_get(:@bypass_confirmation_postpone)
-    admin.email = "new_test@email.com"
-    admin.save
-    assert admin.pending_reconfirmation?
-  end
-
-  test 'should notify previous email on email change when configured' do
-    swap Devise, send_email_changed_notification: true do
-      admin = create_admin
-      original_email = admin.email
-
-      assert_difference 'ActionMailer::Base.deliveries.size', 2 do
-        assert admin.update_attributes(email: 'new-email@example.com')
-      end
-      assert_equal original_email, ActionMailer::Base.deliveries[-2]['to'].to_s
-      assert_equal 'new-email@example.com', ActionMailer::Base.deliveries[-1]['to'].to_s
-
-      assert_email_not_sent do
-        assert admin.confirm
-      end
-    end
   end
 end

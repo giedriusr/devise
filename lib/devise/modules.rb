@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'active_support/core_ext/object/with_options'
 
 Devise.with_options model: true do |d|

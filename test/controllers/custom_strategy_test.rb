@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test_helper'
 require 'ostruct'
 require 'warden/strategies/base'
@@ -29,7 +27,7 @@ end
 class CustomStrategyTest < Devise::ControllerTestCase
   tests CustomStrategyController
 
-  include Devise::Test::ControllerHelpers
+  include Devise::TestHelpers
 
   setup do
     Warden::Strategies.add(:custom_strategy, CustomStrategy)

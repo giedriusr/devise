@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Models
 
@@ -29,20 +27,20 @@ module Devise
       end
 
       included do
-        before_update :clear_reset_password_token, if: :clear_reset_password_token?
+        before_update do
+          if (respond_to?(:email_changed?) && email_changed?) || encrypted_password_changed?
+            clear_reset_password_token
+          end
+        end
       end
 
       # Update password saving the record and clearing token. Returns true if
       # the passwords are valid and the record was saved, false otherwise.
       def reset_password(new_password, new_password_confirmation)
-        if new_password.present?
-          self.password = new_password
-          self.password_confirmation = new_password_confirmation
-          save
-        else
-          errors.add(:password, :blank)
-          false
-        end
+        self.password = new_password
+        self.password_confirmation = new_password_confirmation
+
+        save
       end
 
       # Resets reset password token and send reset password instructions by email.
@@ -97,26 +95,6 @@ module Devise
 
         def send_reset_password_instructions_notification(token)
           send_devise_notification(:reset_password_instructions, token, {})
-        end
-
-        if Devise.activerecord51?
-          def clear_reset_password_token?
-            encrypted_password_changed = respond_to?(:will_save_change_to_encrypted_password?) && will_save_change_to_encrypted_password?
-            authentication_keys_changed = self.class.authentication_keys.any? do |attribute|
-              respond_to?("will_save_change_to_#{attribute}?") && send("will_save_change_to_#{attribute}?")
-            end
-
-            authentication_keys_changed || encrypted_password_changed
-          end
-        else
-          def clear_reset_password_token?
-            encrypted_password_changed = respond_to?(:encrypted_password_changed?) && encrypted_password_changed?
-            authentication_keys_changed = self.class.authentication_keys.any? do |attribute|
-              respond_to?("#{attribute}_changed?") && send("#{attribute}_changed?")
-            end
-
-            authentication_keys_changed || encrypted_password_changed
-          end
         end
 
       module ClassMethods

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Devise::PasswordsController < DeviseController
   prepend_before_action :require_no_authentication
   # Render the #edit only if coming from a reset password email link

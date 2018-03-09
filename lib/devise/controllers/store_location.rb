@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "uri"
 
 module Devise
@@ -31,13 +29,16 @@ module Devise
       # Example:
       #
       #   store_location_for(:user, dashboard_path)
-      #   redirect_to user_facebook_omniauth_authorize_path
+      #   redirect_to user_omniauth_authorize_path(:facebook)
       #
       def store_location_for(resource_or_scope, location)
         session_key = stored_location_key_for(resource_or_scope)
-        
-        path = extract_path_from_location(location)
-        session[session_key] = path if path
+        uri = parse_uri(location)
+        if uri
+          path = [uri.path.sub(/\A\/+/, '/'), uri.query].compact.join('?')
+          path = [path, uri.fragment].compact.join('#')
+          session[session_key] = path
+        end
       end
 
       private
@@ -51,25 +52,6 @@ module Devise
       def stored_location_key_for(resource_or_scope)
         scope = Devise::Mapping.find_scope!(resource_or_scope)
         "#{scope}_return_to"
-      end
-
-      def extract_path_from_location(location)
-        uri = parse_uri(location)
-
-        if uri 
-          path = remove_domain_from_uri(uri)
-          path = add_fragment_back_to_path(uri, path)
-
-          path
-        end
-      end
-
-      def remove_domain_from_uri(uri)
-        [uri.path.sub(/\A\/+/, '/'), uri.query].compact.join('?')
-      end
-
-      def add_fragment_back_to_path(uri, path)
-        [path, uri.fragment].compact.join('#')
       end
     end
   end

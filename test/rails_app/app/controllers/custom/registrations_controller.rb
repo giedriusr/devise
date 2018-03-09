@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Custom::RegistrationsController < Devise::RegistrationsController
   def new
     super do |resource|

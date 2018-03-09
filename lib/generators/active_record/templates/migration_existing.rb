@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class AddDeviseTo<%= table_name.camelize %> < ActiveRecord::Migration<%= migration_version %>
   def self.up
     change_table :<%= table_name %> do |t|

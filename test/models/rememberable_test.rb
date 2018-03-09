@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test_helper'
 
 class RememberableTest < ActiveSupport::TestCase
@@ -16,18 +14,6 @@ class RememberableTest < ActiveSupport::TestCase
     user.expects(:valid?).never
     user.remember_me!
     assert user.remember_created_at
-  end
-
-  test 'remember_me should not generate a new token if valid token exists' do
-    user = create_user
-    user.singleton_class.send(:attr_accessor, :remember_token)
-    User.to_adapter.expects(:find_first).returns(nil)
-
-    user.remember_me!
-    existing_token = user.remember_token
-
-    user.remember_me!
-    assert_equal existing_token, user.remember_token
   end
 
   test 'forget_me should not clear remember token if using salt' do
@@ -101,28 +87,15 @@ class RememberableTest < ActiveSupport::TestCase
     assert_nil User.serialize_from_cookie(user.to_key, "123", Time.now.utc)
   end
 
-  test 'raises a RuntimeError if the user does not implements a rememberable value' do
-    user = User.new
-    assert_raise(RuntimeError) { user.rememberable_value }
-
-    user_with_remember_token = User.new
-    def user_with_remember_token.remember_token; '123-token'; end
-    assert_equal '123-token', user_with_remember_token.rememberable_value
-
-    user_with_salt = User.new
-    def user_with_salt.authenticatable_salt; '123-salt'; end
-    assert_equal '123-salt', user_with_salt.rememberable_value
-  end
-
   test 'raises a RuntimeError if authenticatable_salt is nil or empty' do
     user = User.new
-    def user.authenticatable_salt; nil; end
+    def user.authenticable_salt; nil; end
     assert_raise RuntimeError do
       user.rememberable_value
     end
 
     user = User.new
-    def user.authenticatable_salt; ""; end
+    def user.authenticable_salt; ""; end
     assert_raise RuntimeError do
       user.rememberable_value
     end

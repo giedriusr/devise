@@ -1,58 +1,5 @@
 ### Unreleased
 
-* enhancements
-  * Support for :credentials on Rails v5.2.x. (by @gencer)
-  * Improve documentation about the test suite. (by @tegon)
-  * Test with Rails 5.2.rc1 on Travis. (by @jcoyne)
-  * Allow test with Rails 6. (by @Fudoshiki)
-
-### 4.4.1 - 2018-01-23
-
-* bug fixes
-  * Ensure Gemspec is loaded as utf-8. (by @segiddins)
-  * Fix `ActiveRecord` check on `Confirmable`. (by @tegon)
-  * Fix `signed_in?` docs without running auth hooks. by (@machty)
-
-### 4.4.0 - 2017-12-29
-
-* enhancements
-  * Add `frozen_string_literal` pragma comment to all Ruby files. (by @pat)
-  * Use `set_flash_method!` instead of `set_flash_method` in `Devise::OmniauthCallbacksController#failure`. (by @saichander17)
-  * Clarify how `store_location_for` modifies URIs. (by @olivierlacan)
-  * Move `failed_attempts` increment into its own function. by (@mobilutz)
-  * Add `autocomplete="email"` to email fields. by (@MikeRogers0)
-  * Add the ability to change the default migrations path introduced in Rails 5.0.3.  (by @alexhifer)
-  * Delete unnecessary condition for helper method. (by @davydovanton)
-  * Support `id: :uuid` option for migrations. (by @filip373)
-
-* bug fixes
-  * Fix syntax for MRI 2.5.0. (by @pat)
-  * Validations were being ignored on singup in the `Trackable#update_tracked_fields!` method. (by @AshleyFoster)
-  * Do not modify options for `#serializable_hash`. (by @guigs)
-  * Email confirmations were being sent on sign in/sign out for application using `mongoid` and `mongoid-paperclip` gems. This is because previously we were checking if a model is from Active Record by checking if the method `after_commit` was defined - since `mongoid` doesn' have one - but `mongoid-paperclip` gem does define one, which cause this issue. (by @fjg)
- 
-### 4.3.0 - 2017-05-14
-
-* Enhancements
-  * Dependency support added for Rails 5.1.x.
-
-### 4.2.1 - 2017-03-15
-
-* removals
-  * `Devise::Mailer#scope_name` and `Devise::Mailer#resource` are now protected
-    methods instead of public.
-* bug fixes
-  * Attempt to reset password without the password field in the request now results in a `:blank` validation error.
-    Before this change, Devise would accept the reset password request and log the user in, without validating/changing
-    the password. (by @victor-am)
-  * Confirmation links now expire based on UTC time, working properly when using different timezones. (by @jjuliano)
-* enhancements
-  * Notify the original email when it is changed with a new `Devise.send_email_changed_notification` setting.
-    When using `reconfirmable`, the notification will be sent right away instead of when the unconfirmed email is confirmed.
-    (original change by @ethirajsrinivasan)
-
-### 4.2.0 - 2016-07-01
-
 * removals
   * Remove the deprecated `Devise::ParameterSanitizer` API from Devise 3.
     Please use the `#permit` and `#sanitize` methods over `#for`.
@@ -63,35 +10,13 @@
   * Remove the `Devise::Models::Confirmable#confirm!` method, use `confirm` instead.
   * Remove the `Devise::Models::Recoverable#reset_password!` method, use `reset_password` instead.
   * Remove the `Devise::Models::Recoverable#after_password_reset` method.
-* bug fixes
-  * Fix an `ActionDispatch::IllegalStateError` when testing controllers with Rails 5 rc 2(by @hamadata).
-  * Use `ActiveSupport.on_load` hooks to include Devise on `ActiveRecord` and `Mongoid`,
-    avoiding autoloading these constants too soon (by @lucasmazza, @rafaelfranca).
 * enhancements
   * Display the minimum password length on `registrations/edit` view (by @Yanchek99).
   * You can disable Devise's routes reloading on boot by through the `reload_routes = false` config.
-    This can reduce the time taken to boot the application but it might trigger
-    some errors if you application (mostly your controllers) requires that
-    Devise mappings be loaded during boot time (by @sidonath).
-  * Added `Devise::Test::IntegrationHelpers` to bypass the sign in process using
-    Warden test API (by @lucasmazza).
-  * Define `inspect` in `Devise::Models::Authenticatable` to help ensure password hashes
-    aren't included in exceptions or otherwise accidentally serialized (by @tkrajcar).
-  * Add missing support of `Rails.application.config.action_controller.relative_url_root` (by @kosdiamantis).
-* deprecations
-  * `Devise::TestHelpers` is deprecated in favor of `Devise::Test::ControllerHelpers`
-    (by @lucasmazza).
-  * The `sign_in` test helper has changed to use keyword arguments when passing
-    a scope. `sign_in :admin, users(:alice)` should be rewritten as
-    `sign_in users(:alice), scope: :admin` (by @lucasmazza).
-  * The option `bypass` of `Devise::Controllers::SignInOut#sign_in` method is
-    deprecated in favor of `Devise::Controllers::SignInOut#bypass_sign_in`
-    method (by @ulissesalmeida).
-
-### 4.1.1 - 2016-05-15
-
-* bug fixes
-  * Fix overwriting the remember_token when a valid one already exists (by @ralinchimev).
+    This can reduce the time taken to boot the application but it might trigger some errors
+    if you application (mostly your controllers) requires that Devise mappings be loaded
+    during boot time.
+    (by @sidonath).
 
 ### 4.1.0
 
@@ -128,11 +53,6 @@
   * Now the `sign_out_via` default is `:delete` (by @ulissesalmeida)
 * improvements
   * Avoids extra computation of friendly token for confirmation token (by @sbc100)
-
-### 4.0.3 - 2016-05-15
-
-  * bug fixes
-    * Fix overwriting the remember_token when a valid one already exists (by @ralinchimev).
 
 ### 4.0.2 - 2016-05-02
 
@@ -181,7 +101,7 @@
     You can still use `omniauth_authorize_path(:user, :github)` if you need to
     call the helpers dynamically.
 
-### 4.0.0.rc1 - 2016-02-01
+### 4.0.0.rc1 - 2016-01-02
 
 * Support added to Rails 5 (by @twalpole).
 * Devise no longer supports Rails 3.2 and 4.0.

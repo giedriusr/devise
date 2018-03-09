@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Devise::RegistrationsController < DeviseController
   prepend_before_action :require_no_authentication, only: [:new, :create, :cancel]
   prepend_before_action :authenticate_scope!, only: [:edit, :update, :destroy]
@@ -7,9 +5,9 @@ class Devise::RegistrationsController < DeviseController
 
   # GET /resource/sign_up
   def new
-    build_resource
+    build_resource({})
     yield resource if block_given?
-    respond_with resource
+    respond_with self.resource
   end
 
   # POST /resource
@@ -55,11 +53,10 @@ class Devise::RegistrationsController < DeviseController
           :update_needs_confirmation : :updated
         set_flash_message :notice, flash_key
       end
-      bypass_sign_in resource, scope: resource_name
+      sign_in resource_name, resource, bypass: true
       respond_with resource, location: after_update_path_for(resource)
     else
       clean_up_passwords resource
-      set_minimum_password_length
       respond_with resource
     end
   end
@@ -99,8 +96,8 @@ class Devise::RegistrationsController < DeviseController
 
   # Build a devise resource passing in the session. Useful to move
   # temporary session data to the newly created user.
-  def build_resource(hash = {})
-    self.resource = resource_class.new_with_session(hash, session)
+  def build_resource(hash=nil)
+    self.resource = resource_class.new_with_session(hash || {}, session)
   end
 
   # Signs in a user on sign up. You can overwrite this method in your own

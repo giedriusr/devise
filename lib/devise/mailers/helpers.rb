@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Mailers
     module Helpers
@@ -7,16 +5,15 @@ module Devise
 
       included do
         include Devise::Controllers::ScopedViews
+        attr_reader :scope_name, :resource
       end
 
       protected
 
-      attr_reader :scope_name, :resource
-
       # Configure default email options
-      def devise_mail(record, action, opts = {}, &block)
+      def devise_mail(record, action, opts={})
         initialize_from_record(record)
-        mail headers_for(action, opts), &block
+        mail headers_for(action, opts)
       end
 
       def initialize_from_record(record)

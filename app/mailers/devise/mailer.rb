@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 if defined?(ActionMailer)
   class Devise::Mailer < Devise.parent_mailer.constantize
     include Devise::Mailers::Helpers
@@ -17,10 +15,6 @@ if defined?(ActionMailer)
     def unlock_instructions(record, token, opts={})
       @token = token
       devise_mail(record, :unlock_instructions, opts)
-    end
-
-    def email_changed(record, opts={})
-      devise_mail(record, :email_changed, opts)
     end
 
     def password_change(record, opts={})

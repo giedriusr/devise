@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'devise/hooks/trackable'
 
 module Devise
@@ -32,7 +30,7 @@ module Devise
 
       def update_tracked_fields!(request)
         update_tracked_fields(request)
-        save
+        save(validate: false)
       end
     end
   end

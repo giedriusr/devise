@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Controllers
     # Those helpers are convenience methods added to ApplicationController.
@@ -11,11 +9,6 @@ module Devise
       included do
         if respond_to?(:helper_method)
           helper_method :warden, :signed_in?, :devise_controller?
-        end
-
-        def append_info_to_payload(payload)
-          super
-          payload[:status] ||= 401 unless payload[:exception]
         end
       end
 
@@ -83,6 +76,11 @@ module Devise
             end
           METHODS
         end
+
+        def log_process_action(payload)
+          payload[:status] ||= 401 unless payload[:exception]
+          super
+        end
       end
 
       # Define authentication filters and accessor helpers based on mappings.
@@ -140,7 +138,7 @@ module Devise
 
       # The main accessor for the warden proxy instance
       def warden
-        request.env['warden'] or raise MissingWarden
+        request.env['warden']
       end
 
       # Return true if it's a devise_controller. false to all controllers unless
@@ -277,17 +275,6 @@ module Devise
         Devise.mappings.each { |_,m| instance_variable_set("@current_#{m.name}", nil) }
         super
       end
-    end
-  end
-
-  class MissingWarden < StandardError
-    def initialize
-      super "Devise could not find the `Warden::Proxy` instance on your request environment.\n" + \
-        "Make sure that your application is loading Devise and Warden as expected and that " + \
-        "the `Warden::Manager` middleware is present in your middleware stack.\n" + \
-        "If you are seeing this on one of your tests, ensure that your tests are either " + \
-        "executing the Rails middleware stack or that your tests are using the `Devise::Test::ControllerHelpers` " + \
-        "module to inject the `request.env['warden']` object for you."
     end
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "devise/hooks/lockable"
 
 module Devise
@@ -101,7 +99,8 @@ module Devise
         if super && !access_locked?
           true
         else
-          increment_failed_attempts
+          self.failed_attempts ||= 0
+          self.failed_attempts += 1
           if attempts_exceeded?
             lock_access! unless access_locked?
           else
@@ -109,11 +108,6 @@ module Devise
           end
           false
         end
-      end
-      
-      def increment_failed_attempts
-        self.failed_attempts ||= 0
-        self.failed_attempts += 1
       end
 
       def unauthenticated_message

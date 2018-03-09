@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'active_model/version'
 require 'devise/hooks/activatable'
 require 'devise/hooks/csrf_cleaner'
@@ -104,7 +102,7 @@ module Devise
       # and passing a new list of attributes you want to exempt. All attributes
       # given to :except will simply add names to exempt to Devise internal list.
       def serializable_hash(options = nil)
-        options = options.try(:dup) || {}
+        options ||= {}
         options[:except] = Array(options[:except])
 
         if options[:force_except]
@@ -114,15 +112,6 @@ module Devise
         end
 
         super(options)
-      end
-
-      # Redefine inspect using serializable_hash, to ensure we don't accidentally
-      # leak passwords into exceptions.
-      def inspect
-        inspection = serializable_hash.collect do |k,v|
-          "#{k}: #{respond_to?(:attribute_for_inspect) ? attribute_for_inspect(k) : v.inspect}"
-        end
-        "#<#{self.class} #{inspection.join(", ")}>"
       end
 
       protected
@@ -154,25 +143,13 @@ module Devise
       #         if new_record? || changed?
       #           pending_notifications << [notification, args]
       #         else
-      #           message = devise_mailer.send(notification, self, *args)
-      #           Remove once we move to Rails 4.2+ only.
-      #           if message.respond_to?(:deliver_now)
-      #             message.deliver_now
-      #           else
-      #             message.deliver
-      #           end
+      #           devise_mailer.send(notification, self, *args).deliver
       #         end
       #       end
       #
       #       def send_pending_notifications
       #         pending_notifications.each do |notification, args|
-      #           message = devise_mailer.send(notification, self, *args)
-      #           Remove once we move to Rails 4.2+ only.
-      #           if message.respond_to?(:deliver_now)
-      #             message.deliver_now
-      #           else
-      #             message.deliver
-      #           end
+      #           devise_mailer.send(notification, self, *args).deliver
       #         end
       #
       #         # Empty the pending notifications array because the
@@ -258,7 +235,7 @@ module Devise
         #   end
         #
         # Finally, notice that Devise also queries for users in other scenarios
-        # besides authentication, for example when retrieving a user to send
+        # besides authentication, for example when retrieving an user to send
         # an e-mail for password reset. In such cases, find_for_authentication
         # is not called.
         def find_for_authentication(tainted_conditions)

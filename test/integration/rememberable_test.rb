@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test_helper'
 
 class RememberMeTest < Devise::IntegrationTest
@@ -12,13 +10,7 @@ class RememberMeTest < Devise::IntegrationTest
   end
 
   def generate_signed_cookie(raw_cookie)
-    request = if Devise::Test.rails51? || Devise::Test.rails52?
-      ActionController::TestRequest.create(Class.new) # needs a "controller class"
-    elsif Devise::Test.rails5?
-      ActionController::TestRequest.create
-    else
-      ActionController::TestRequest.new
-    end
+    request = Devise.rails5? ? ActionDispatch::TestRequest.create : ActionDispatch::TestRequest.new
     request.cookie_jar.signed['raw_cookie'] = raw_cookie
     request.cookie_jar['raw_cookie']
   end

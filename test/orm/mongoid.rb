@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'mongoid/version'
 
 Mongoid.configure do |config|
@@ -10,6 +8,6 @@ end
 
 class ActiveSupport::TestCase
   setup do
-    Mongoid.default_session.drop
+    Mongoid.purge!
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Models
     # Registerable is responsible for everything related to registering a new

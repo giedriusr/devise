@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   # Checks the scope in the given environment and returns the associated failure app.
   class Delegator

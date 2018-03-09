@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'webrat/core/elements/form'
 require 'action_dispatch/testing/integration'
 

@@ -1,12 +1,10 @@
-# frozen_string_literal: true
-
 require 'devise/strategies/rememberable'
 require 'devise/hooks/rememberable'
 require 'devise/hooks/forgetable'
 
 module Devise
   module Models
-    # Rememberable manages generating and clearing token for remembering the user
+    # Rememberable manages generating and clearing token for remember the user
     # from a saved cookie. Rememberable also has utility methods for dealing
     # with serializing the user into the cookie and back from the cookie, trying
     # to lookup the record based on the saved information.
@@ -48,7 +46,7 @@ module Devise
       end
 
       def remember_me!
-        self.remember_token ||= self.class.remember_token if respond_to?(:remember_token)
+        self.remember_token = self.class.remember_token if respond_to?(:remember_token)
         self.remember_created_at ||= Time.now.utc
         save(validate: false) if self.changed?
       end
@@ -76,7 +74,7 @@ module Devise
         elsif respond_to?(:authenticatable_salt) && (salt = authenticatable_salt.presence)
           salt
         else
-          raise "authenticatable_salt returned nil for the #{self.class.name} model. " \
+          raise "authenticable_salt returned nil for the #{self.class.name} model. " \
             "In order to use rememberable, you must ensure a password is always set " \
             "or have a remember_token column in your model or implement your own " \
             "rememberable_value in the model with custom logic."

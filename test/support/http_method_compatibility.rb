@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   class IntegrationTest < ActionDispatch::IntegrationTest
     # %w( get post patch put head delete xml_http_request

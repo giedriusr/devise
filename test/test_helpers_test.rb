@@ -1,10 +1,8 @@
-# frozen_string_literal: true
-
 require 'test_helper'
 
-class TestControllerHelpersTest < Devise::ControllerTestCase
+class TestHelpersTest < Devise::ControllerTestCase
   tests UsersController
-  include Devise::Test::ControllerHelpers
+  include Devise::TestHelpers
 
   test "redirects if attempting to access a page unauthenticated" do
     get :index
@@ -100,11 +98,6 @@ class TestControllerHelpersTest < Devise::ControllerTestCase
     assert_equal response.body, "<html><body>You are being <a href=\"http://test.host/users/sign_in\">redirected</a>.</body></html>"
   end
 
-  test "returns the content type of a failure app" do
-    get :index, params: { format: :xml }
-    assert response.content_type.include?('application/xml')
-  end
-
   test "defined Warden after_authentication callback should not be called when sign_in is called" do
     begin
       Warden::Manager.after_authentication do |user, auth, opts|
@@ -170,15 +163,7 @@ class TestControllerHelpersTest < Devise::ControllerTestCase
 
   test "creates a new warden proxy if the request object has changed" do
     old_warden_proxy = warden
-
-    @request = if Devise::Test.rails51? || Devise::Test.rails52?
-      ActionController::TestRequest.create(Class.new) # needs a "controller class"
-    elsif Devise::Test.rails5?
-      ActionController::TestRequest.create
-    else
-      ActionController::TestRequest.new
-    end
-
+    @request = Devise.rails5? ? ActionController::TestRequest.create : ActionController::TestRequest.new
     new_warden_proxy = warden
 
     assert_not_equal old_warden_proxy, new_warden_proxy

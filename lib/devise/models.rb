@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Devise
   module Models
     class MissingAttribute < StandardError
@@ -14,7 +12,7 @@ module Devise
 
     # Creates configuration values for Devise and for the given module.
     #
-    #   Devise::Models.config(Devise::Models::DatabaseAuthenticatable, :stretches)
+    #   Devise::Models.config(Devise::DatabaseAuthenticatable, :stretches)
     #
     # The line above creates:
     #
