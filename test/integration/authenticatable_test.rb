@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class AuthenticationSanityTest < Devise::IntegrationTest
@@ -245,7 +247,7 @@ class AuthenticationRoutesRestrictions < Devise::IntegrationTest
     end
   end
 
-  test 'not signed in users should see unautheticated page (unauthenticated accepted)' do
+  test 'not signed in users should see unauthenticated page (unauthenticated accepted)' do
     get join_path
 
     assert_response :success
@@ -369,7 +371,7 @@ class AuthenticationWithScopedViewsTest < Devise::IntegrationTest
     end
   end
 
-  test 'renders the scoped view if turned on in an specific controller' do
+  test 'renders the scoped view if turned on in a specific controller' do
     begin
       Devise::SessionsController.scoped_views = true
       assert_raise Webrat::NotFoundError do
@@ -541,6 +543,18 @@ class AuthenticationOthersTest < Devise::IntegrationTest
       delete destroy_user_session_path, xhr: true, headers: { "HTTP_ACCEPT" => "text/html,*/*" }
       assert_response :redirect
       refute warden.authenticated?(:user)
+    end
+  end
+
+  test 'not signed in should return notification payload with 401 status' do
+    begin
+      subscriber = ActiveSupport::Notifications.subscribe /process_action.action_controller/ do |_name, _start, _finish, _id, payload|
+        assert_equal 401, payload[:status]
+      end
+
+      get admins_path
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber)
     end
   end
 end

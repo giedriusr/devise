@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'test_models'
 
@@ -112,7 +114,7 @@ class CheckFieldsTest < ActiveSupport::TestCase
       attr_accessor :encrypted_password, :email
     end
 
-    assert_nothing_raised Devise::Models::MissingAttribute do
+    assert_nothing_raised do
       Devise::Models.check_fields!(Player)
     end
   end

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class PasswordsControllerTest < Devise::ControllerTestCase
   tests Devise::PasswordsController
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   setup do
     request.env["devise.mapping"] = Devise.mappings[:user]

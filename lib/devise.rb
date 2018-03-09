@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails'
 require 'active_support/core_ext/numeric/time'
 require 'active_support/dependencies'
@@ -37,6 +39,11 @@ module Devise
   module Strategies
     autoload :Base,            'devise/strategies/base'
     autoload :Authenticatable, 'devise/strategies/authenticatable'
+  end
+
+  module Test
+    autoload :ControllerHelpers,  'devise/test/controller_helpers'
+    autoload :IntegrationHelpers, 'devise/test/integration_helpers'
   end
 
   # Constants which holds devise configuration for extensions. Those should
@@ -144,11 +151,15 @@ module Devise
   mattr_accessor :timeout_in
   @@timeout_in = 30.minutes
 
-  # Used to hash the password. Please generate one with rake secret.
+  # Used to hash the password. Please generate one with rails secret.
   mattr_accessor :pepper
   @@pepper = nil
 
-  # Used to enable sending notification to user when their password is changed
+  # Used to send notification to the original user email when their email is changed.
+  mattr_accessor :send_email_changed_notification
+  @@send_email_changed_notification = false
+
+  # Used to enable sending notification to user when their password is changed.
   mattr_accessor :send_password_change_notification
   @@send_password_change_notification = false
 
@@ -280,6 +291,14 @@ module Devise
   # Stores the token generator
   mattr_accessor :token_generator
   @@token_generator = nil
+
+  def self.rails51? # :nodoc:
+    Rails.gem_version >= Gem::Version.new("5.1.x")
+  end
+
+  def self.activerecord51? # :nodoc:
+    defined?(ActiveRecord) && ActiveRecord.gem_version >= Gem::Version.new("5.1.x")
+  end
 
   # Default way to set up Devise. Run rails generate devise_install to create
   # a fresh initializer with all configuration values.

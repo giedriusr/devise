@@ -1,10 +1,15 @@
+# frozen_string_literal: true
+
 module Devise
   module Controllers
     # Provide sign in and sign out functionality.
     # Included by default in all controllers.
     module SignInOut
       # Return true if the given scope is signed in session. If no scope given, return
-      # true if any scope is signed in. Does not run authentication hooks.
+      # true if any scope is signed in. This will run authentication hooks, which may
+      # cause exceptions to be thrown from this method; if you simply want to check
+      # if a scope has already previously been authenticated without running
+      # authentication hooks, you can directly call `warden.authenticated?(scope: scope)`
       def signed_in?(scope=nil)
         [scope || Devise.mappings.keys].flatten.any? do |_scope|
           warden.authenticate?(scope: _scope)
@@ -12,20 +17,15 @@ module Devise
       end
 
       # Sign in a user that already was authenticated. This helper is useful for logging
-      # users in after sign up.
-      #
-      # All options given to sign_in is passed forward to the set_user method in warden.
-      # The only exception is the :bypass option, which bypass warden callbacks and stores
-      # the user straight in session. This option is useful in cases the user is already
-      # signed in, but we want to refresh the credentials in session.
+      # users in after sign up. All options given to sign_in is passed forward
+      # to the set_user method in warden.
       #
       # Examples:
       #
       #   sign_in :user, @user                      # sign_in(scope, resource)
       #   sign_in @user                             # sign_in(resource)
-      #   sign_in @user, event: :authentication  # sign_in(resource, options)
-      #   sign_in @user, store: false            # sign_in(resource, options)
-      #   sign_in @user, bypass: true            # sign_in(resource, options)
+      #   sign_in @user, event: :authentication     # sign_in(resource, options)
+      #   sign_in @user, store: false               # sign_in(resource, options)
       #
       def sign_in(resource_or_scope, *args)
         options  = args.extract_options!
@@ -35,6 +35,13 @@ module Devise
         expire_data_after_sign_in!
 
         if options[:bypass]
+          ActiveSupport::Deprecation.warn(<<-DEPRECATION.strip_heredoc, caller)
+          [Devise] bypass option is deprecated and it will be removed in future version of Devise.
+          Please use bypass_sign_in method instead.
+          Example:
+
+            bypass_sign_in(user)
+          DEPRECATION
           warden.session_serializer.store(resource, scope)
         elsif warden.user(scope) == resource && !options.delete(:force)
           # Do nothing. User already signed in and we are not forcing it.
@@ -42,6 +49,20 @@ module Devise
         else
           warden.set_user(resource, options.merge!(scope: scope))
         end
+      end
+
+      # Sign in a user bypassing the warden callbacks and stores the user
+      # straight in session. This option is useful in cases the user is already
+      # signed in, but we want to refresh the credentials in session.
+      #
+      # Examples:
+      #
+      #   bypass_sign_in @user, scope: :user
+      #   bypass_sign_in @user
+      def bypass_sign_in(resource, scope: nil)
+        scope ||= Devise::Mapping.find_scope!(resource)
+        expire_data_after_sign_in!
+        warden.session_serializer.store(resource, scope)
       end
 
       # Sign out a given user or scope. This helper is useful for signing out a user
@@ -58,7 +79,6 @@ module Devise
         scope = Devise::Mapping.find_scope!(resource_or_scope)
         user = warden.user(scope: scope, run_callbacks: false) # If there is no user
 
-        warden.raw_session.inspect # Without this inspect here. The session does not clear.
         warden.logout(scope)
         warden.clear_strategies_cache!(scope: scope)
         instance_variable_set(:"@current_#{scope}", nil)

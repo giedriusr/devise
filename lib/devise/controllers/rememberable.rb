@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Devise
   module Controllers
     # A module that may be optionally included in a controller in order
@@ -18,7 +20,7 @@ module Devise
 
       # Remembers the given resource by setting up a cookie
       def remember_me(resource)
-        return if env["devise.skip_storage"]
+        return if request.env["devise.skip_storage"]
         scope = Devise::Mapping.find_scope!(resource)
         resource.remember_me!
         cookies.signed[remember_key(resource, scope)] = remember_cookie_values(resource)

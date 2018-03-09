@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Devise
   module Hooks
     # A small warden proxy so we can remember, forget and
@@ -7,7 +9,7 @@ module Devise
       include Devise::Controllers::SignInOut
 
       attr_reader :warden
-      delegate :cookies, :env, to: :warden
+      delegate :cookies, :request, to: :warden
 
       def initialize(warden)
         @warden = warden

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class SessionsControllerTest < Devise::ControllerTestCase
   tests Devise::SessionsController
-  include Devise::TestHelpers
+  include Devise::Test::ControllerHelpers
 
   test "#create doesn't raise unpermitted params when sign in fails" do
     begin
@@ -94,7 +96,7 @@ class SessionsControllerTest < Devise::ControllerTestCase
       User.class_eval { attr_protected :email }
 
       begin
-        assert_nothing_raised ActiveModel::MassAssignmentSecurity::Error do
+        assert_nothing_raised do
           get :new, user: { email: "allez viens!" }
         end
       ensure

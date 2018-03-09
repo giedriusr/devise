@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class SerializableTest < ActiveSupport::TestCase
@@ -33,6 +35,15 @@ class SerializableTest < ActiveSupport::TestCase
   test 'should include unsafe keys on JSON if a force_except is provided' do
     assert_no_key "email", from_json(force_except: :email)
     assert_key "confirmation_token", from_json(force_except: :email)
+  end
+
+  test 'should not include unsafe keys in inspect' do
+    assert_match(/email/, @user.inspect)
+    assert_no_match(/confirmation_token/, @user.inspect)
+  end
+
+  test 'should accept frozen options' do
+    assert_key "username", @user.as_json({only: :username}.freeze)["user"]
   end
 
   def assert_key(key, subject)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'devise/rails/routes'
 require 'devise/rails/warden_compat'
 
@@ -32,7 +34,9 @@ module Devise
     end
 
     initializer "devise.secret_key" do |app|
-      if app.respond_to?(:secrets)
+      if app.respond_to?(:credentials)
+        Devise.secret_key ||= app.credentials.secret_key_base
+      elsif app.respond_to?(:secrets)
         Devise.secret_key ||= app.secrets.secret_key_base
       elsif app.config.respond_to?(:secret_key_base)
         Devise.secret_key ||= app.config.secret_key_base

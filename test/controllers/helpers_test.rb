@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 require 'ostruct'
 
@@ -150,11 +152,11 @@ class ControllerAuthenticatableTest < Devise::ControllerTestCase
     @controller.sign_in(user, force: true)
   end
 
-  test 'sign in accepts bypass as option' do
+  test 'bypass the sign in' do
     user = User.new
     @mock_warden.expects(:session_serializer).returns(serializer = mock())
     serializer.expects(:store).with(user, :user)
-    @controller.sign_in(user, bypass: true)
+    @controller.bypass_sign_in(user)
   end
 
   test 'sign out clears up any signed in user from all scopes' do
@@ -164,8 +166,8 @@ class ControllerAuthenticatableTest < Devise::ControllerTestCase
     @controller.instance_variable_set(:@current_user, user)
     @controller.instance_variable_set(:@current_admin, user)
     @controller.sign_out
-    assert_equal nil, @controller.instance_variable_get(:@current_user)
-    assert_equal nil, @controller.instance_variable_get(:@current_admin)
+    assert_nil @controller.instance_variable_get(:@current_user)
+    assert_nil @controller.instance_variable_get(:@current_admin)
   end
 
   test 'sign out logs out and clears up any signed in user by scope' do
@@ -175,7 +177,7 @@ class ControllerAuthenticatableTest < Devise::ControllerTestCase
     @mock_warden.expects(:clear_strategies_cache!).with(scope: :user).returns(true)
     @controller.instance_variable_set(:@current_user, user)
     @controller.sign_out(:user)
-    assert_equal nil, @controller.instance_variable_get(:@current_user)
+    assert_nil @controller.instance_variable_get(:@current_user)
   end
 
   test 'sign out accepts a resource as argument' do
